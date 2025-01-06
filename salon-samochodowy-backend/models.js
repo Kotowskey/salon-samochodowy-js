@@ -14,7 +14,7 @@ import { Sequelize } from 'sequelize';
  * @apiParam {string} host Adres hosta bazy danych
  * @apiParam {string} dialect Dialekt bazy danych (np. 'mysql')
  */
-const sequelize = new Sequelize('salon_samochodowy', 'root', 'root', {
+const sequelize = new Sequelize('salon_samochodowy', 'root', 'Admin', {
     host: 'localhost',
     dialect: 'mysql', 
 });
@@ -67,6 +67,10 @@ const Car = sequelize.define('Car', {
     isAvailableForRent: {
         type: Sequelize.BOOLEAN,
         defaultValue: true,
+    },
+    image: {
+        type: Sequelize.STRING,
+        allowNull: true,
     },
 }, {
     timestamps: false, 

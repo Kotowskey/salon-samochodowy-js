@@ -76,6 +76,12 @@
         name="isAvailableForRent"
       />
     </label>
+    <label for="image">
+      Dodaj zdjęcie
+      <input type="file" (change)="onFileSelected($event)" id="image" />
+    </label>
+
+
 
     <div class="add-car-form-buttons">
       <button type="submit" [disabled]="showcarform.invalid">Zapisz</button>

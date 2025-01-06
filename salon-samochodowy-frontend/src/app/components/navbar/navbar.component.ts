@@ -178,15 +178,24 @@ export class NavbarComponent implements OnDestroy {
    */
   openAddCarDialog(): void {
     const dialogRef = this.dialog.open(ShowCarForm, {
-      width: '600px',
-      data: { ...this.car },
+        width: '600px',
+        data: { ...this.car },
     });
 
-    dialogRef.afterClosed().subscribe((result) => {
-      if (result) {
-        this.car = result;
-        this.addCar();
-      }
+    dialogRef.afterClosed().subscribe(result => {
+        if (result) {
+            const { car, file } = result;
+            this.carService.addCar(car).subscribe(newCar => {
+                if (file) {
+                    this.carService.uploadCarImage(newCar.id, file).subscribe(() => {
+                        alert('Samochód i zdjęcie zostały dodane!');
+                    });
+                } else {
+                    alert('Samochód został dodany1!');
+                    console.log(car);
+                }
+            });
+        }
     });
-  }
+}
 }

@@ -5,9 +5,25 @@ import session from 'express-session'; // Import express-session
 import { sequelize, Car, User } from './models.js'; 
 import { Op } from 'sequelize';
 import { body, param, validationResult } from 'express-validator'; // Import express-validator
+import multer from 'multer';
+import path from 'path';
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, 'uploads/'); // Folder docelowy
+    },
+    filename: (req, file, cb) => {
+        // Ustalanie unikalnej nazwy pliku
+        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+        const ext = path.extname(file.originalname); // Zachowanie oryginalnego rozszerzenia
+        cb(null, file.fieldname + '-' + uniqueSuffix + ext);
+    }
+});
+
+const upload = multer({ storage });
+
 
 // Middleware
 app.use(bodyParser.json());
@@ -228,8 +244,27 @@ app.post('/cars', authenticateSession, [
         res.status(201).json(newCar);
     } catch (error) {
         res.status(500).json({ error: error.message });
+        console.log(error)
     }
 });
+app.post('/cars/:id/upload', upload.single('image'), async (req, res) => {
+    try {
+        const car = await Car.findByPk(req.params.id);
+        if (!car) {
+            return res.status(404).json({ error: 'Samochód nie znaleziony' });
+        }
+
+        // Zapisz ścieżkę do pliku w bazie danych
+        car.image = req.file.path; 
+        await car.save();
+
+        res.status(200).json({ message: 'Zdjęcie dodane pomyślnie', imagePath: car.imagePath });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+app.use('/uploads', express.static('uploads'));
+
 
 app.put('/cars/:id', authenticateSession, [
     param('id')

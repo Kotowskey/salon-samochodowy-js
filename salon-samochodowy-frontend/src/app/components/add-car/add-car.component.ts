@@ -62,7 +62,7 @@ export class AddCarComponent {
    * Metoda subskrybuje się do Observable zwróconego przez `addCar` i 
    * obsługuje zarówno sukces, jak i błąd operacji.
    */
-  addCar(): void {
+  /*addCar(): void {
     this.carService.addCar(this.car).subscribe(
       (newCar) => {
         console.log('Nowy samochód dodany:', newCar);
@@ -73,7 +73,7 @@ export class AddCarComponent {
         alert('Wystąpił błąd przy dodawaniu samochodu.');
       }
     );
-  }
+  }*/
 
   /**
    * Metoda otwierająca dialog formularza do dodawania samochodu.
@@ -82,17 +82,26 @@ export class AddCarComponent {
    * Po zamknięciu dialogu, jeśli użytkownik zatwierdził dane, 
    * samochód zostanie dodany poprzez metodę `addCar`.
    */
-  openAddCarDialog(): void {
+openAddCarDialog(): void {
     const dialogRef = this.dialog.open(ShowCarForm, {
-      width: '600px',
-      data: { ...this.car },
+        width: '600px',
+        data: { ...this.car },
     });
 
     dialogRef.afterClosed().subscribe(result => {
-      if (result) {
-        this.car = result;
-        this.addCar();
-      }
+        if (result) {
+            const { car, file } = result;
+            this.carService.addCar(car).subscribe(newCar => {
+                if (file) {
+                    this.carService.uploadCarImage(newCar.id, file).subscribe(() => {
+                        alert('Samochód i zdjęcie zostały dodane!');
+                    });
+                } else {
+                    //alert('Samochód został dodany1!');
+                    console.log(car);
+                }
+            });
+        }
     });
-  }
+}
 }

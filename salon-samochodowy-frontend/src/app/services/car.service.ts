@@ -17,6 +17,7 @@ export interface Car {
   ownerId: number;
   renterId: number;
   isAvailableForRent: boolean;
+  image?: string;
 }
 
 /**
@@ -149,6 +150,19 @@ export class CarService {
         })
       );
   }
+  uploadCarImage(carId: number, file: File): Observable<any> {
+    const formData = new FormData();
+    formData.append('image', file);
+
+    return this.http.post(`${this.apiUrl}/${carId}/upload`, formData, { withCredentials: true })
+      .pipe(
+        catchError(error => {
+          console.error(`Error uploading image for car ID ${carId}:`, error);
+          return of(null);
+        })
+      );
+}
+
 
   /**
    * Aktualizuje informacje o istniejącym samochodzie.

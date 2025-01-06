@@ -36,6 +36,7 @@ export class ShowCarForm {
     horsePower: 0,
     isAvailableForRent: true,
   };
+  selectedFile: File | null = null;
 
   /**
    * @constructor
@@ -60,6 +61,12 @@ export class ShowCarForm {
       isAvailableForRent: [this.car.isAvailableForRent]
     })
   }
+  onFileSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files[0]) {
+        this.selectedFile = input.files[0];
+    }
+}
 
   /**
    * @method
@@ -72,7 +79,7 @@ export class ShowCarForm {
    * this.addCar();
    * ```
    */
-  addCar() {
+  addCar(): void {
     this.car.brand = this.showcarform.get('brand')!.value;
     this.car.model = this.showcarform.get('model')!.value;
     this.car.year = this.showcarform.get('year')!.value;
@@ -80,8 +87,13 @@ export class ShowCarForm {
     this.car.price = this.showcarform.get('price')!.value;
     this.car.horsePower = this.showcarform.get('horsePower')!.value;
     this.car.isAvailableForRent = this.showcarform.get('isAvailableForRent')!.value;
-    this.dialogRef.close(this.car);
-  }
+    console.log(this.car)
+    if (this.selectedFile) {
+        this.dialogRef.close({ car: this.car, file: this.selectedFile });
+    } else {
+        this.dialogRef.close({ car: this.car, file: null });
+    }
+}
 
   /**
    * @method

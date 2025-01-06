@@ -126,13 +126,32 @@ export class EditCarComponent {
   openEditCarDialog(): void {
     const dialogRef = this.dialog.open(ShowCarForm, {
       width: '600px',
-      data: this.car,
+      data: { ...this.car },
     });
 
     dialogRef.afterClosed().subscribe((result) => {
       if (result) {
-        this.car = result;
-        this.editCar();
+        const { car, file } = result;
+
+        // Aktualizuj dane samochodu w bazie
+        this.carService.updateCar(car.id, car).subscribe(
+          (updatedCar) => {
+            console.log('Samochód zmodyfikowany:', updatedCar);
+
+            // Jeśli dodano plik, wyślij go na serwer
+            if (file) {
+              this.carService.uploadCarImage(updatedCar.id, file).subscribe(() => {
+                alert('Samochód i zdjęcie zostały zmodyfikowane!');
+              });
+            } else {
+              alert('Samochód został zmodyfikowany!');
+            }
+          },
+          (error) => {
+            console.error('Błąd przy edytowaniu samochodu:', error);
+            alert('Wystąpił błąd przy edytowaniu samochodu.');
+          }
+        );
       }
     });
   }

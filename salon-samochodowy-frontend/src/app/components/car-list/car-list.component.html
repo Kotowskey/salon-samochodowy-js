@@ -26,6 +26,10 @@
             </a>
             
             <div class="card-body d-flex flex-column">
+              @if(car.image)
+              {
+                <img [src]="'http://localhost:3000/' + car.image" alt="Zdjęcie samochodu" class="img-fluid" />
+              }
               <h5 class="card-title">{{ car.brand }} {{ car.model }}</h5>
               <p class="card-text">
                 <strong>Rok:</strong> {{ car.year }}<br>
